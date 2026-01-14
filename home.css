@@ -1,0 +1,121 @@
+* {
+  box-sizing: border-box;
+  user-select: none;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(circle at top, #1c1c1c 0%, #000 70%),
+    #000;
+  color: #eee;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+}
+
+#app {
+  max-width: 1100px;
+  width: 100%;
+  padding: 30px;
+}
+
+/* TITRE */
+h1 {
+  text-align: center;
+  font-size: 48px;
+  letter-spacing: 4px;
+  color: #ffcc00;
+  margin-bottom: 30px;
+  text-shadow: 0 0 20px rgba(255,200,0,0.4);
+}
+
+/* LAYOUT */
+.menu-preview-container {
+  display: flex;
+  gap: 40px;
+}
+
+/* MENUS */
+.menu-column {
+  flex: 1;
+}
+
+.menu-title {
+  font-size: 14px;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+  color: #999;
+}
+
+.menu-options {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.menu-option {
+  padding: 8px 14px;
+  border: 1px solid #333;
+  background: linear-gradient(180deg, #111, #070707);
+  cursor: pointer;
+}
+
+.menu-option:hover,
+.menu-option.active {
+  border-color: #ff9900;
+  color: #ffcc00;
+}
+
+/* PREVIEW */
+.preview-column {
+  width: 360px;
+  padding: 10px;
+  background: linear-gradient(180deg, #111, #050505);
+  border: 2px solid #222;
+}
+
+#preview-block {
+  height: 220px;
+  background: repeating-linear-gradient(
+    45deg,
+    #111,
+    #111 10px,
+    #0c0c0c 10px,
+    #0c0c0c 20px
+  );
+}
+
+/* BOUTONS */
+button {
+  margin-top: 35px;
+  padding: 14px 30px;
+  font-size: 16px;
+  letter-spacing: 2px;
+  border: none;
+  cursor: pointer;
+  color: #000;
+}
+
+#play {
+  margin-right: 20px;
+  background: linear-gradient(180deg, #ff9900, #81470d);
+}
+
+#play:hover {
+  margin-right: 20px;
+  background: linear-gradient(180deg, #81470d, #ff9900);
+}
+
+#editor {
+  background: linear-gradient(180deg, #3a7752, #2eb363);
+  color: #ddd;
+  border: 1px solid #555;
+}
+
+#editor:hover {
+  background: linear-gradient(180deg, #2eb363, #3a7752);
+  color: #fff;
+}

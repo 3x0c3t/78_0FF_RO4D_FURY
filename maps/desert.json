@@ -1,0 +1,13 @@
+{
+  "name": "Désert",
+  "terrain": "sable",
+  "size": { "width": 1000, "length": 1000 },
+  "spawnPoint": { "x": 0, "y": 0, "z": 0 },
+  "obstacles": [
+    { "type": "rock", "position": { "x": 10, "y": 0, "z": 5 }, "scale": 2 },
+    { "type": "rock", "position": { "x": 25, "y": 0, "z": 15 }, "scale": 3 },
+    { "type": "cactus", "position": { "x": 5, "y": 0, "z": 12 }, "scale": 1.5 },
+    { "type": "cactus", "position": { "x": 30, "y": 0, "z": 40 }, "scale": 2 },
+    { "type": "sand_dune", "position": { "x": 50, "y": 0, "z": 50 }, "scale": 5 }
+  ]
+}

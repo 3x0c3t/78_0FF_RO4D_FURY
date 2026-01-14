@@ -1,0 +1,108 @@
+/* ===== BASE ===== */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #222;
+  color: #eee;
+  height: 100vh;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+/* ===== CONTAINER EDITEUR ===== */
+.editor-container {
+  display: flex;
+  flex: 1;
+  gap: 20px;
+  height: calc(100% - 60px);
+}
+
+/* ===== COLONNE MENU ===== */
+.menu-column {
+  width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.menu-title {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.menu-line {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+}
+
+/* ===== COLONNE APERCU ===== */
+.preview-column {
+  flex: 1;
+  background: #111;
+  border: 2px solid #555;
+  border-radius: 6px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+canvas {
+  flex: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
+}
+
+/* ===== BOUTONS ===== */
+.bottom-buttons {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+button {
+  padding: 10px 15px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  border-radius: 6px;
+}
+
+#save {
+  background: linear-gradient(135deg, #0f9b0f, #00c853);
+  color: #fff;
+}
+
+#back {
+  background: linear-gradient(135deg, #555, #999);
+  color: #fff;
+}
+
+/* ===== INPUTS / SELECT ===== */
+select, input[type="color"], input[type="file"] {
+  padding: 5px;
+  border-radius: 4px;
+  font-size: 14px;
+  background: #333;
+  color: #eee;
+  border: none;
+}
+
+input[type="file"] {
+  cursor: pointer;
+}
