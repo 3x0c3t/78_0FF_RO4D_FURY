@@ -1,0 +1,9 @@
+{
+  "sizeX": 2,
+  "sizeY": 1,
+  "sizeZ": 2,
+  "color": "#ff0000",
+  "suspRest": 0.4,
+  "suspTravel": 1,
+  "suspCompression": 0.4
+}

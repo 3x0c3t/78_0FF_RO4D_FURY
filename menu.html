@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Menu</title>
+  <link rel="stylesheet" href="menu.css">
+</head>
+<body>
+
+<button id="menu-button"><span class="burger-square"></span></button>
+
+<div id="menu-panel">
+  <ul>
+    <li data-tab="audio" class="active">Audio</li>
+    <li data-tab="video">Vidéo</li>
+    <li data-tab="other">Autre</li>
+  </ul>
+
+  <div id="tab-audio" class="tab">
+    <div class="setting">
+      <span class="label">Volume Musique</span>
+      <div class="slider">
+        <input type="range" min="0" max="100" value="70" id="musicVolume">
+        <div class="track"><div class="fill" id="musicFill"><span class="value">70%</span></div></div>
+      </div>
+    </div>
+    <div class="setting">
+      <span class="label">Volume Effets</span>
+      <div class="slider">
+        <input type="range" min="0" max="100" value="60" id="sfxVolume">
+        <div class="track"><div class="fill" id="sfxFill"><span class="value">60%</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-video" class="tab" style="display:none;">
+    <p style="color:#ccc; text-align:center;">Options vidéo ici</p>
+  </div>
+
+  <div id="tab-other" class="tab" style="display:none;">
+    <p style="color:#ccc; text-align:center;">Autres options ici</p>
+  </div>
+</div>
+
+<script src="menu.js"></script>
+</body>
+</html>

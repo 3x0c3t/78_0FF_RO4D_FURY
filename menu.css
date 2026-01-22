@@ -1,0 +1,147 @@
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  background: transparent;
+}
+
+/* BOUTON BURGER */
+#menu-button {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border: none;
+  background: #111;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  transition: background 0.3s ease;
+  z-index: 1000;
+}
+
+.burger-square {
+  width: 24px;
+  height: 24px;
+  background: #fff;
+  border-radius: 4px;
+  transition: transform 0.4s ease, background 0.3s ease;
+}
+
+#menu-button:hover {
+  background: #222;
+}
+
+#menu-button:hover .burger-square {
+  transform: rotate(90deg);
+  background: #2ecc71;
+}
+
+/* PANNEAU MENU */
+#menu-panel {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  width: 250px;
+  background: rgba(10,10,10,0.95);
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.7);
+  display: none;
+  z-index: 999;
+  padding-bottom: 15px;
+}
+
+#menu-panel ul {
+  list-style: none;
+  padding: 10px 0;
+  margin: 0;
+  display: flex;
+  justify-content: space-around;
+}
+
+#menu-panel ul li {
+  padding: 10px 0;
+  color: #eee;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s, color 0.2s;
+  flex: 1;
+  text-align: center;
+}
+
+#menu-panel ul li.active, #menu-panel ul li:hover {
+  background: #2ecc71;
+  color: #111;
+  border-radius: 6px;
+}
+
+/* TABS */
+.tab {
+  padding: 10px 20px;
+}
+
+/* SLIDERS */
+.setting {
+  margin-bottom: 20px;
+}
+
+.label {
+  display: block;
+  font-size: 12px;
+  color: #aaa;
+  margin-bottom: 8px;
+}
+
+.slider {
+  position: relative;
+}
+
+.slider input[type="range"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.track {
+  height: 20px;
+  background: #222;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.slider:hover .track {
+  background: #333;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+}
+
+.fill {
+  height: 100%;
+  width: 0%;
+  background: red;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 8px;
+  box-sizing: border-box;
+  transition: width 0.15s linear, background-color 0.15s linear;
+}
+
+.value {
+  font-size: 14px;
+  font-weight: 700;
+  color: #FFF;
+  text-shadow:
+    -2px 0 #000,
+     2px 0 #000,
+     0 -2px #000,
+     0  2px #000;
+  mix-blend-mode: screen;
+  pointer-events: none;
+  transition: color 0.2s ease;
+}

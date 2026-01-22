@@ -1,158 +1,136 @@
-// ===== IMPORTS =====
-import * as THREE from '../../libs/three.module.js';
-import { OrbitControls } from '../../libs/OrbitControls.js';
-import { GLTFLoader } from '../../libs/GLTFLoader.js';
+// editorMap.js
 
-// ===== CANVAS / SCÈNE =====
-const canvas = document.getElementById('car-canvas');
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0xdddddd);
+import { initRenderer, render, resize } from './editorCarViewer.js';
+import { loadCar, getCarBody, getSuspensions } from './editorCarData.js';
 
-// ===== CAMÉRA =====
-const camera = new THREE.PerspectiveCamera(60, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
-camera.position.set(10, 5, 10);
+window.addEventListener('DOMContentLoaded', () => {
+  const canvas = document.getElementById('car-canvas');
+  initRenderer(canvas);
+  loadCar();
 
-// ===== RENDERER =====
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-renderer.setSize(canvas.clientWidth, canvas.clientHeight);
-renderer.setPixelRatio(window.devicePixelRatio);
+  const inputs = {
+    sizeX: document.getElementById('car-size-x'),
+    sizeY: document.getElementById('car-size-y'),
+    sizeZ: document.getElementById('car-size-z'),
+    color: document.getElementById('car-color'),
+    rest: document.getElementById('suspension-rest'),
+    travel: document.getElementById('suspension-travel'),
+    compression: document.getElementById('suspension-compression')
+  };
 
-// ===== LUMIÈRES =====
-scene.add(new THREE.AmbientLight(0xffffff, 0.6));
-const dirLight = new THREE.DirectionalLight(0xffffff, 1);
-dirLight.position.set(10, 20, 10);
-scene.add(dirLight);
+  const buttons = {
+    save: document.getElementById('save'),
+    back: document.getElementById('back'),
+    import: document.getElementById('import-car')
+  };
 
-// ===== CONTROLS =====
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
+  function updateCar() {
+    const body = getCarBody();
+    const susp = getSuspensions();
+    if (!body) return;
 
-// ===== HELPERS =====
-scene.add(new THREE.AxesHelper(5));
-scene.add(new THREE.GridHelper(20, 20));
+    const x = +inputs.sizeX.value;
+    const y = +inputs.sizeY.value;
+    const z = +inputs.sizeZ.value;
 
-// ===== LOADERS =====
-const gltfLoader = new GLTFLoader();
+    body.scale.set(x / 3, y / 0.8, z / 1.6);
+    body.position.y = y / 2;
+    body.material.color.set(inputs.color.value);
 
-// ===== OBJETS =====
-let vehicleMesh = null;
-let wheelMesh = null;
+    const halfX = x / 2;
+    const halfZ = z / 2;
 
-// ===== UI ROUE =====
-const wheelX = document.getElementById('wheel-x');
-const wheelY = document.getElementById('wheel-y');
-const wheelZ = document.getElementById('wheel-z');
-const wheelCoords = document.getElementById('wheel-coords');
+    const rest = +inputs.rest.value;
+    const travel = +inputs.travel.value;
+    const compression = +inputs.compression.value;
 
-// ===== CAMÉRA =====
-function centerCameraOnVehicle(size) {
-  camera.position.set(size.x * 2, size.y * 2, size.z * 2);
-  controls.target.set(0, size.y / 2, 0);
-  controls.update();
-}
+    const layout = {
+      frontLeft:  [-halfX,  halfZ],
+      frontRight: [ halfX,  halfZ],
+      rearLeft:   [-halfX, -halfZ],
+      rearRight:  [ halfX, -halfZ]
+    };
 
-// ===== VÉHICULE GLB =====
-function loadVehicleGLB(filename) {
-  gltfLoader.load(`../../cars/${filename}`, gltf => {
-    if (vehicleMesh) scene.remove(vehicleMesh);
+    Object.entries(layout).forEach(([key, pos]) => {
+      const s = susp[key];
+      if (!s) return;
 
-    vehicleMesh = gltf.scene;
-    scene.add(vehicleMesh);
+      const yPos = rest - compression;
 
-    const box = new THREE.Box3().setFromObject(vehicleMesh);
-    const size = new THREE.Vector3();
-    const center = new THREE.Vector3();
-    box.getSize(size);
-    box.getCenter(center);
+      s.group.position.set(pos[0], 0, pos[1]);
 
-    vehicleMesh.position.sub(center);
-    vehicleMesh.position.y = size.y / 2;
+      s.rod.scale.y = travel;
+      s.spring.scale.y = travel;
 
-    centerCameraOnVehicle(size);
+      s.rod.position.y = yPos + travel / 2;
+      s.spring.position.y = yPos + travel / 2;
+      s.wheel.position.y = yPos;
+    });
+  }
 
-    if (wheelMesh) vehicleMesh.add(wheelMesh);
+  Object.values(inputs).forEach(el => {
+    if (!el) return;
+    ['input','change'].forEach(evt => el.addEventListener(evt, updateCar));
   });
-}
 
-// ===== ROUE =====
-function loadWheel() {
-  gltfLoader.load('../../cars/wheels/wheel1.glb', gltf => {
-    wheelMesh = gltf.scene;
-    wheelMesh.scale.set(1, 1, 1);
+  window.addEventListener('resize', resize);
 
-    wheelMesh.position.set(
-      -5.5,
-      0.0,
-      -7.0
-    );
+  function animate() {
+    requestAnimationFrame(animate);
+    render();
+  }
+  animate();
+  updateCar();
 
-    if (vehicleMesh) vehicleMesh.add(wheelMesh);
-    updateWheelUI();
+  // ===== SAUVEGARDE =====
+  if (buttons.save) buttons.save.addEventListener('click', () => {
+    const data = {
+      sizeX: +inputs.sizeX.value,
+      sizeY: +inputs.sizeY.value,
+      sizeZ: +inputs.sizeZ.value,
+      color: inputs.color.value,
+      suspRest: +inputs.rest.value,
+      suspTravel: +inputs.travel.value,
+      suspCompression: +inputs.compression.value
+    };
+
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'vehicle.json';
+    a.click();
+    URL.revokeObjectURL(url);
   });
-}
 
-// ===== UI ROUE =====
-function updateWheelUI() {
-  if (!wheelMesh) return;
+  // ===== CHARGEMENT =====
+  if (buttons.import) buttons.import.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-  wheelX.value = wheelMesh.position.x;
-  wheelY.value = wheelMesh.position.y;
-  wheelZ.value = wheelMesh.position.z;
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+      try {
+        const data = JSON.parse(evt.target.result);
+        if (data.sizeX !== undefined) inputs.sizeX.value = data.sizeX;
+        if (data.sizeY !== undefined) inputs.sizeY.value = data.sizeY;
+        if (data.sizeZ !== undefined) inputs.sizeZ.value = data.sizeZ;
+        if (data.color !== undefined) inputs.color.value = data.color;
+        if (data.suspRest !== undefined) inputs.rest.value = data.suspRest;
+        if (data.suspTravel !== undefined) inputs.travel.value = data.suspTravel;
+        if (data.suspCompression !== undefined) inputs.compression.value = data.suspCompression;
 
-  wheelCoords.textContent =
-    `X:${wheelMesh.position.x.toFixed(2)} ` +
-    `Y:${wheelMesh.position.y.toFixed(2)} ` +
-    `Z:${wheelMesh.position.z.toFixed(2)}`;
-}
+        updateCar();
+      } catch (err) {
+        alert('Fichier invalide');
+        console.error(err);
+      }
+    };
+    reader.readAsText(file);
+  });
 
-[wheelX, wheelY, wheelZ].forEach(input => {
-  input.addEventListener('input', () => {
-    if (!wheelMesh) return;
-
-    wheelMesh.position.set(
-      parseFloat(wheelX.value),
-      parseFloat(wheelY.value),
-      parseFloat(wheelZ.value)
-    );
-
-    updateWheelUI();
+  // ===== BOUTON RETOUR =====
+  if (buttons.back) buttons.back.addEventListener('click', () => {
+    window.history.back();
   });
 });
-
-// ===== MENUS =====
-document.getElementById('car-type').addEventListener('change', e => {
-  const val = e.target.value.toLowerCase();
-  if (val === 'car01') loadVehicleGLB('car01.glb');
-});
-
-document.getElementById('car-color').addEventListener('input', e => {
-  if (!vehicleMesh) return;
-  vehicleMesh.traverse(m => {
-    if (m.isMesh && m.material) {
-      m.material.color.set(e.target.value);
-    }
-  });
-});
-
-document.getElementById('back').addEventListener('click', () => {
-  window.location.href = '../editor.html';
-});
-
-// ===== RESIZE =====
-window.addEventListener('resize', () => {
-  camera.aspect = canvas.clientWidth / canvas.clientHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(canvas.clientWidth, canvas.clientHeight);
-});
-
-// ===== LOOP =====
-function animate() {
-  requestAnimationFrame(animate);
-  controls.update();
-  renderer.render(scene, camera);
-}
-animate();
-
-// ===== INIT =====
-loadVehicleGLB('car01.glb');
-loadWheel();

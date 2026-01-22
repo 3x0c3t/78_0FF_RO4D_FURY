@@ -13,15 +13,13 @@
 
   <div class="editor-container">
 
-    <!-- COLONNE GAUCHE : menu -->
+    <!-- MENU -->
     <div class="menu-column">
 
-      <!-- Importer un véhicule -->
-      <input type="file" id="import-car" accept=".json" style="margin-bottom:10px; display:block;">
+      <input type="file" id="import-car" accept=".json">
 
-      <!-- Choisir le type de véhicule -->
       <div class="menu-line">
-        <div class="menu-title">Type de véhicule :</div>
+        <div class="menu-title">Type de véhicule</div>
         <select id="car-type">
           <option value="car01">Car01</option>
           <option value="4x4">4x4</option>
@@ -30,46 +28,47 @@
         </select>
       </div>
 
-      <!-- Choisir couleur -->
       <div class="menu-line">
-        <div class="menu-title">Couleur :</div>
+        <div class="menu-title">Couleur</div>
         <input type="color" id="car-color" value="#ff0000">
       </div>
 
-      <!-- ===== ROUE ===== -->
+      <div class="menu-title">Dimensions</div>
       <div class="menu-line">
-        <div class="menu-title">Roue (position)</div>
-
-        <label>
-          X
-          <input id="wheel-x" type="number" step="0.1" value="1">
+        <label>Largeur
+          <input type="number" id="car-size-x" step="0.1" value="3">
         </label>
-
-        <label>
-          Y
-          <input id="wheel-y" type="number" step="0.1" value="0.4">
+        <label>Hauteur
+          <input type="number" id="car-size-y" step="0.1" value="0.8">
         </label>
-
-        <label>
-          Z
-          <input id="wheel-z" type="number" step="0.1" value="1">
+        <label>Longueur
+          <input type="number" id="car-size-z" step="0.1" value="1.6">
         </label>
+      </div>
 
-        <div id="wheel-coords"
-             style="margin-top:6px;font-size:12px;color:#555;">
-          X:0 Y:0 Z:0
-        </div>
+      <div class="menu-title">Suspensions</div>
+      <div class="menu-line">
+        <label>Hauteur repos
+          <input type="number" id="suspension-rest" step="0.05" value="0.4">
+        </label>
+        <label>Débattement
+          <input type="number" id="suspension-travel" step="0.05" value="0.3">
+        </label>
+        <label>Compression
+          <input type="number" id="suspension-compression" step="0.05" value="0">
+        </label>
       </div>
 
     </div>
 
-    <!-- COLONNE DROITE : aperçu -->
+    <!-- APERÇU 3D -->
     <div class="preview-column">
       <canvas id="car-canvas"></canvas>
     </div>
 
   </div>
 
+  <!-- BOUTONS EN BAS -->
   <div class="bottom-buttons">
     <button id="save">SAUVEGARDER</button>
     <button id="back">RETOUR</button>

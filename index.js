@@ -1,8 +1,9 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const playButton = document.getElementById('enter');
+const enterButton = document.getElementById('enter');
 
-  playButton.addEventListener('click', () => {
+enterButton.addEventListener('click', () => {
+    // autorisation audio pour la page home
     sessionStorage.setItem('audioAllowed', 'true');
+
+    // redirection vers home.html
     window.location.href = 'home.html';
-  });
 });
