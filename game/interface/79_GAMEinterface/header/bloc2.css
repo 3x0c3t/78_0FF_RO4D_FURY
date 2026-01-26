@@ -1,0 +1,14 @@
+/* ====================================================
+ * Fichier : bloc2.css
+ * Créé le : 2026-01-20 15:42
+ * Description : Style du bloc 2 du footer
+ * ==================================================== */
+
+#footer-container .bloc2 {
+    background-color: rgba(0,255,255,0.2);
+    border:1px solid rgba(0,255,255,0.3);
+    border-radius:8px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}

@@ -1,121 +1,113 @@
+import * as THREE from '../libs/three.module.js';
+
+import {
+    initScene,
+    scene,
+    renderer,
+    camera,
+    handleResize
+} from './gameScene.js';
+
+import { loadMap } from './gameMap.js';
+import { loadVehicle, moveVehicle, vehicleGroup } from './gameVehicle.js';
+import { initControls } from './gameControls.js';
+import { startMusic } from './gameAudio.js';
+
 // ===== PARAMÈTRES =====
 const defaultMap = 'map';
 const mapSelector = sessionStorage.getItem('selectedMap') || defaultMap;
 const carSelector = sessionStorage.getItem('selectedCar') || 'car1';
 
-// ===== AUDIO =====
-let musicStarted = false;
-window.music = new Audio('../media/music/ambiance.mp3');
-window.music.loop = true;
-window.music.volume = 0.7;
+// ===== INITIALISATION =====
+initScene();
+initControls();
+startMusic({
+    ambiance: '../media/music/ambiance4-3x0c3t.mp3',
+    selectMenu: '../media/sound/select_menu.mp3'
+});
 
-window.selectSound = new Audio('../media/music/select_menu.mp3');
-window.selectSound.volume = 0.6;
+// ===== HUD / RESTART BUTTON =====
+const restartBtn = document.getElementById('restartBtn');
+restartBtn.addEventListener('click', () => {
+    if (vehicleGroup) vehicleGroup.rotation.set(0, 0, 0);
+    if (vehicleGroup) vehicleGroup.position.set(0, 6, 0);
+    restartBtn.style.display = 'none';
+});
 
-function startMusic() {
-    if (musicStarted) return;
-    window.music.play().then(() => musicStarted = true).catch(() => {});
-}
-
-document.addEventListener('DOMContentLoaded', () => startMusic());
-
-// ===== THREE.JS SETUP =====
-import * as THREE from '../libs/three.module.js';
-import { OrbitControls } from '../libs/OrbitControls.js';
-
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x87ceeb);
-
-const camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 2000);
-camera.position.set(120, 140, 120);
-
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
-
-const ambient = new THREE.AmbientLight(0xffffff, 0.4);
-scene.add(ambient);
-
-const sun = new THREE.DirectionalLight(0xffffff, 1);
-sun.position.set(100, 200, 100);
-scene.add(sun);
-
-// ===== CONTROLS =====
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
-controls.dampingFactor = 0.05;
-controls.screenSpacePanning = false;
-controls.target.set(0, 0, 0);
-controls.update();
-
-// ===== TERRAIN & VEHICLE =====
-let terrain;
-let vehicle;
-
-// ===== LOAD VEHICLE =====
-async function loadVehicle(name) {
-    const res = await fetch(`../cars/${name}.json`);
-    const data = await res.json();
-
-    const geometry = new THREE.BoxGeometry(data.sizeX, data.sizeY, data.sizeZ);
-    const material = new THREE.MeshLambertMaterial({ color: data.color || '#ff0000' });
-
-    vehicle = new THREE.Mesh(geometry, material);
-    vehicle.position.set(0, data.sizeY/2, 0); // temporaire
-    scene.add(vehicle);
-
-    // Charger la map après le véhicule pour placer spawn correctement
+// ===== LOAD SEQUENTIEL =====
+let vehicleLoaded = false;
+(async () => {
+    await loadVehicle(carSelector);
+    vehicleLoaded = true;
     await loadMap(mapSelector);
+})();
+
+// ===== CAMERA 3E PERSONNE =====
+const cameraOffset = new THREE.Vector3(0, 5, -10);
+
+function updateCamera() {
+    if (!vehicleGroup) return;
+    const relativeCameraOffset = cameraOffset.clone();
+    const cameraPosition = relativeCameraOffset.applyMatrix4(vehicleGroup.matrixWorld);
+    camera.position.lerp(cameraPosition, 0.1);
+    camera.lookAt(vehicleGroup.position);
 }
 
-// ===== LOAD MAP =====
-async function loadMap(name) {
-    const res = await fetch(`../maps/${name}.json`);
-    const data = await res.json();
+// ===== VÉRIFIER SI LE VÉHICULE EST RETOURNÉ =====
+function checkVehicleUpsideDown() {
+    if (!vehicleGroup) return;
+    const up = new THREE.Vector3(0, 1, 0);
+    const vehicleUp = new THREE.Vector3(0, 1, 0).applyQuaternion(vehicleGroup.quaternion);
+    restartBtn.style.display = vehicleUp.dot(up) < 0.5 ? 'block' : 'none';
+}
 
-    const mapSize = 20;
-    const blockSize = 5;
-    const geometry = new THREE.PlaneGeometry(
-        mapSize * blockSize,
-        mapSize * blockSize,
-        mapSize,
-        mapSize
-    );
-    geometry.rotateX(-Math.PI / 2);
+// ===== FOOTER / HUD =====
+const footer = document.getElementById('game-footer');
+if (footer) {
+    fetch('./interface/79_GAMEinterface/footer/footer.html')
+        .then(res => {
+            if (!res.ok) throw new Error(`Footer non trouvé: ${res.status}`);
+            return res.text();
+        })
+        .then(html => {
+            footer.innerHTML = html;
 
-    const pos = geometry.attributes.position;
-    for (let i = 0; i < pos.array.length; i++) {
-        pos.array[i] = data.vertices[i] ?? pos.array[i];
-    }
-    pos.needsUpdate = true;
-    geometry.computeVertexNormals();
+            // Charger le JS du footer
+            const script = document.createElement('script');
+            script.src = './interface/79_GAMEinterface/footer/footer.js';
+            document.body.appendChild(script);
 
-    const material = new THREE.MeshLambertMaterial({ color: 0xffffff });
-    terrain = new THREE.Mesh(geometry, material);
-    scene.add(terrain);
-
-    // Spawn si présent
-    if (data.spawn && vehicle) {
-        vehicle.position.set(data.spawn[0], vehicle.geometry.parameters.height/2, data.spawn[2]);
-        // recaler la caméra sur le véhicule
-        controls.target.set(vehicle.position.x, vehicle.position.y, vehicle.position.z);
-        controls.update();
-    }
+            script.onload = () => {
+                console.log('Footer HUD chargé avec tous ses blocs !');
+            };
+        })
+        .catch(err => console.error('Impossible de charger le footer :', err));
 }
 
 // ===== ANIMATION LOOP =====
 function animate() {
     requestAnimationFrame(animate);
-    controls.update();
-    renderer.render(scene, camera); // rendre même si terrain pas encore prêt
+
+    if (vehicleLoaded) {
+        moveVehicle();
+        updateCamera();
+        checkVehicleUpsideDown();
+
+        // Mettre à jour le HUD si la fonction existe
+        if (window.updateHUD && vehicleGroup) {
+            window.updateHUD({
+                speed: vehicleGroup.userData.speed || Math.floor(Math.random() * 200),
+                inclineX: vehicleGroup.rotation.x * (180 / Math.PI),
+                inclineY: vehicleGroup.rotation.y * (180 / Math.PI),
+                inclineZ: vehicleGroup.rotation.z * (180 / Math.PI),
+                weight: vehicleGroup.userData.weight || 1200,
+                battery: vehicleGroup.userData.battery || 85
+            });
+        }
+    }
+
+    renderer.render(scene, camera);
 }
 
-window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-});
-
-// ===== START =====
-loadVehicle(carSelector);
+window.addEventListener('resize', handleResize);
 animate();

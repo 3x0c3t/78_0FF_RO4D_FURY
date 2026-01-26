@@ -1,28 +1,13 @@
-// ===== AUDIO =====
-let musicStarted = false;
-window.music = new Audio('media/music/ambiance.mp3');
-window.music.loop = true;
-window.music.volume = 0.7;
-
-window.selectSound = new Audio('media/music/select_menu.mp3');
+// ===== SONS DE SÉLECTION =====
+window.selectSound = new Audio('media/sound/select_menu.mp3');
 window.selectSound.volume = 0.6;
 
-// Vérifie si l'utilisateur a autorisé le son depuis la page index
+// Vérifie si l'utilisateur a autorisé le son
 const audioAllowed = sessionStorage.getItem('audioAllowed') === 'true';
-
-// Fonction pour lancer la musique si autorisée
-function startMusic() {
-    if (musicStarted || !audioAllowed) return;
-    window.music.play().then(() => musicStarted = true).catch(() => {});
-}
-
-// Lancer dès que la page est prête
-document.addEventListener('DOMContentLoaded', () => startMusic());
 
 // ===== MENU PRINCIPAL =====
 document.querySelectorAll('.menu-option').forEach(opt => {
     opt.addEventListener('click', () => {
-        startMusic();
         if (audioAllowed) {
             window.selectSound.currentTime = 0;
             window.selectSound.play().catch(() => {});
@@ -35,10 +20,13 @@ document.querySelectorAll('.menu-option').forEach(opt => {
     });
 });
 
-// ===== BOUTONS =====
+// ===== BOUTONS PRINCIPAUX =====
 document.getElementById('play').addEventListener('click', () => {
-    startMusic();
-    window.location.href = 'game/game.html';  // <--- REDIRECTION CORRECTE
+    const mp3Frame = document.getElementById('mp3player-container').querySelector('iframe');
+    if (mp3Frame && mp3Frame.contentWindow) {
+        mp3Frame.contentWindow.postMessage({ action: 'play' }, '*');
+    }
+    window.location.href = 'game/game.html';
 });
 
 document.getElementById('editor').addEventListener('click', () => {
@@ -61,7 +49,8 @@ function updateSlider(slider, fill){
     const value = slider.value;
     fill.style.width = value + "%";
     fill.style.backgroundColor = colorFor(value);
-    fill.querySelector(".value").textContent = value + "%";
+    const valueDisplay = fill.querySelector(".value");
+    if(valueDisplay) valueDisplay.textContent = value + "%";
 }
 
 // Initialisation des sliders
@@ -69,7 +58,10 @@ if(musicSlider && musicFill){
     updateSlider(musicSlider, musicFill);
     musicSlider.addEventListener("input", () => {
         updateSlider(musicSlider, musicFill);
-        window.music.volume = musicSlider.value / 100;
+        const mp3Frame = document.getElementById('mp3player-container').querySelector('iframe');
+        if(mp3Frame && mp3Frame.contentWindow){
+            mp3Frame.contentWindow.postMessage({ action: 'setVolume', value: musicSlider.value / 100 }, '*');
+        }
     });
 }
 
@@ -80,3 +72,25 @@ if(sfxSlider && sfxFill){
         window.selectSound.volume = sfxSlider.value / 100;
     });
 }
+
+// ===== TOGGLE LECTEUR MP3 =====
+const mp3Toggle = document.getElementById('mp3-toggle');
+const mp3Container = document.getElementById('mp3player-container');
+
+mp3Toggle.addEventListener('click', () => {
+    mp3Container.classList.toggle('active');
+    const mp3Frame = mp3Container.querySelector('iframe');
+    if(mp3Frame && mp3Frame.contentWindow){
+        mp3Frame.contentWindow.postMessage({ action: 'play' }, '*');
+    }
+});
+
+// ===== AUTO-PLAY MP3 SI AUTORISÉ =====
+window.addEventListener('DOMContentLoaded', () => {
+    if(audioAllowed){
+        const mp3Frame = document.getElementById('mp3player-container').querySelector('iframe');
+        if(mp3Frame && mp3Frame.contentWindow){
+            mp3Frame.contentWindow.postMessage({ action: 'play' }, '*');
+        }
+    }
+});

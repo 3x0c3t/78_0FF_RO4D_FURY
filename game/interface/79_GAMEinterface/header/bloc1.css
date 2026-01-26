@@ -1,0 +1,14 @@
+/* ====================================================
+ * Fichier : bloc1.css
+ * Créé le : 2026-01-20 15:42
+ * Description : Style du bloc 1 du footer
+ * ==================================================== */
+
+#footer-container .bloc1 {
+    background-color: rgba(255,255,0,0.2);
+    border:1px solid rgba(255,255,0,0.3);
+    border-radius:8px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}

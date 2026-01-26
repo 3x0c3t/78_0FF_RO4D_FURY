@@ -7,12 +7,39 @@
 </head>
 <body>
 
-  <!-- Optionnel : UI overlay -->
-  <div id="hud">
+<!-- ===== HEADER FIXE ===== -->
+<header id="game-header">
+  <div id="header-left">
     <h1>OFF ROAD FURY</h1>
-    <p>Utilisez la souris pour tourner, zoomer et déplacer la caméra.</p>
+    <p>Utilisez ZQSD pour conduire. La souris pour tourner la caméra.</p>
   </div>
+  <div id="header-right">
+    <!-- Bloc debug (70% largeur) -->
+    <div id="debug-panel">
+      <div id="debug-panel-title">Debug</div>
+      <div id="debug-console">
+FPS: 0
+Position: 0,0,0
+Vitesse: 0
+Etat: OK
+Collision: None
+      </div>
+    </div>
+  </div>
+</header>
 
-  <script type="module" src="game.js"></script>
-</body>
-</html>
+<!-- HUD minimal (ex: bouton restart) -->
+<div id="hud">
+  <button id="restartBtn" style="display:none;">Redémarrer</button>
+</div>
+
+<div id="game-container">
+  <canvas id="game-canvas"></canvas>
+</div>
+
+<footer id="game-footer">
+  <!-- Contenu externe à charger ici -->
+</footer>
+
+<script type="module" src="game.js"></script>
+

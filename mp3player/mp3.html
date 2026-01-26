@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Lecteur MP3</title>
+    <link rel="stylesheet" href="mp3.css">
+</head>
+<body>
+<div class="player">
+
+    <!-- Écran + Volume -->
+    <div class="screen-area">
+        <div class="screen" id="screen">
+            <div class="title" id="title">Titre</div>
+            <div class="artist" id="artist">Artiste</div>
+
+            <div class="infos">
+                <span id="currentTime">0:00</span>
+                <span id="duration">0:00</span>
+            </div>
+
+            <div class="status">
+                <span id="shuffleStatus">SHF OFF</span>
+                <span id="repeatStatus">REP OFF</span>
+                <span id="volumeDisplay">VOL 50%</span>
+            </div>
+        </div>
+
+        <div class="volume-wrapper" id="volumeWrapper">
+            <input type="range" id="volume" min="0" max="100" value="50" orient="vertical">
+        </div>
+    </div>
+
+    <!-- Contrôles -->
+    <div class="controls">
+        <button id="prev" class="control-btn" title="Précédent">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18 18V6l-8.5 6L18 18zm-9 0h-2V6h2v12z"/>
+            </svg>
+        </button>
+
+        <button id="playPause" class="control-btn" title="Play/Pause">
+            <svg id="playIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M8 5v14l11-7z"/>
+            </svg>
+            <svg id="pauseIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="display:none;">
+                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+            </svg>
+        </button>
+
+        <button id="next" class="control-btn" title="Suivant">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M4 6v12l8.5-6L4 6zm9 0h2v12h-2V6z"/>
+            </svg>
+        </button>
+
+        <div class="right-controls">
+            <button id="shuffle" class="control-btn" title="Shuffle">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M4 4h2.586l5.707 5.707-1.414 1.414L6.172 5.414 4 7.586V4zm16 16h-2.586l-5.707-5.707 1.414-1.414L17.828 18.586 20 16.414V20zM10.828 13.172l1.414-1.414L12.414 10H20v2h-7.586l-.414.414z"/>
+                </svg>
+            </button>
+            <button id="repeat" class="control-btn" title="Repeat">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M17 1l4 4-4 4V6H7V4h10V1zm-10 22l-4-4 4-4v2h10v2H7v2z"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+</div>
+
+<audio id="audio"></audio>
+<script src="mp3.js"></script>
+</body>
+</html>
