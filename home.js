@@ -25,6 +25,29 @@ document.querySelectorAll('.menu-option').forEach(opt => {
     });
 });
 
+// ===== SELECTION DE LA MAP =====
+const mapSelect = document.getElementById('map-select');
+
+if (mapSelect) {
+    const savedMap = sessionStorage.getItem('selectedMap') || 'map';
+    const savedOptionExists = Array.from(mapSelect.options)
+        .some(option => option.value === savedMap);
+
+    mapSelect.value = savedOptionExists ? savedMap : 'map';
+
+    // Synchroniser la sélection avec le jeu.
+    sessionStorage.setItem('selectedMap', mapSelect.value);
+
+    mapSelect.addEventListener('change', () => {
+        sessionStorage.setItem('selectedMap', mapSelect.value);
+
+        if (audioAllowed) {
+            window.selectSound.currentTime = 0;
+            window.selectSound.play().catch(() => {});
+        }
+    });
+}
+
 // ===== BOUTONS PRINCIPAUX =====
 document.getElementById('play').addEventListener('click', () => {
     const mp3Frame = document.getElementById('mp3player-container').querySelector('iframe');

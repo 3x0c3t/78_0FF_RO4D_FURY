@@ -19,9 +19,21 @@ export function initScene() {
     );
     camera.position.set(120, 140, 120);
 
-    renderer = new THREE.WebGLRenderer({ antialias: true });
+    // Utiliser le canvas existant dans game.html.
+    // Cela évite de créer un second canvas qui intercepterait la souris.
+    const gameCanvas = document.getElementById('game-canvas');
+
+    if (!gameCanvas) {
+        throw new Error('Canvas #game-canvas introuvable dans game.html');
+    }
+
+    renderer = new THREE.WebGLRenderer({
+        canvas: gameCanvas,
+        antialias: true
+    });
+
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
 
     const ambient = new THREE.AmbientLight(0xffffff, 0.4);
     scene.add(ambient);
@@ -31,10 +43,9 @@ export function initScene() {
     scene.add(sun);
 
     controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.05;
 
     // Souris : rotation orbitale.
+    controls.enabled = true;
     controls.enableRotate = true;
 
     // Molette : zoom avant / arrière.
@@ -42,6 +53,13 @@ export function initScene() {
     controls.minDistance = 4;
     controls.maxDistance = 40;
     controls.zoomSpeed = 1.0;
+
+    // Désactiver le déplacement latéral involontaire.
+    controls.enablePan = false;
+
+    // Rotation amortie pour un mouvement plus fluide.
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.08;
 
     controls.target.set(0, 0, 0);
     controls.update();
