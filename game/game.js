@@ -9,7 +9,7 @@ import {
 } from './gameScene.js';
 
 import { loadMap } from './gameMap.js';
-import { loadVehicle, moveVehicle, vehicleGroup } from './gameVehicle.js';
+import { loadVehicle, moveVehicle, resetVehicle, vehicleGroup } from './gameVehicle.js';
 import { initControls } from './gameControls.js';
 import { startMusic } from './gameAudio.js';
 
@@ -29,8 +29,7 @@ startMusic({
 // ===== HUD / RESTART BUTTON =====
 const restartBtn = document.getElementById('restartBtn');
 restartBtn.addEventListener('click', () => {
-    if (vehicleGroup) vehicleGroup.rotation.set(0, 0, 0);
-    if (vehicleGroup) vehicleGroup.position.set(0, 6, 0);
+    resetVehicle();
     restartBtn.style.display = 'none';
 });
 
@@ -55,10 +54,18 @@ function updateCamera() {
 
 // ===== VÉRIFIER SI LE VÉHICULE EST RETOURNÉ =====
 function checkVehicleUpsideDown() {
-    if (!vehicleGroup) return;
+    if (!vehicleGroup || !restartBtn) return;
+
     const up = new THREE.Vector3(0, 1, 0);
-    const vehicleUp = new THREE.Vector3(0, 1, 0).applyQuaternion(vehicleGroup.quaternion);
-    restartBtn.style.display = vehicleUp.dot(up) < 0.5 ? 'block' : 'none';
+    const vehicleUp = new THREE.Vector3(0, 1, 0)
+        .applyQuaternion(vehicleGroup.quaternion);
+
+    // Afficher le bouton si le véhicule est retourné ou tombe dans le vide.
+    const upsideDown = vehicleUp.dot(up) < 0.5;
+    const fallenIntoVoid = vehicleGroup.position.y < -5;
+
+    restartBtn.style.display =
+        (upsideDown || fallenIntoVoid) ? 'block' : 'none';
 }
 
 // ===== FOOTER / HUD =====
