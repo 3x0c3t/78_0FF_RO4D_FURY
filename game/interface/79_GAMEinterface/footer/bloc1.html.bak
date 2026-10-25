@@ -1,0 +1,22 @@
+<div class="bloc1 hud-vehicle">
+  <div class="hud-row">
+    <div class="hud-item">
+      <img src="medias/icons/icon_speed.png" alt="Vitesse">
+      <span id="speed">0 km/h</span>
+    </div>
+    <div class="hud-item">
+      <img src="medias/icons/icon_incline.png" alt="Inclinaison">
+      <span id="incline">X:0° Y:0° Z:0°</span>
+    </div>
+  </div>
+  <div class="hud-row">
+    <div class="hud-item">
+      <img src="medias/icons/icon_weight.png" alt="Poids">
+      <span id="weight">0 kg</span>
+    </div>
+    <div class="hud-item">
+      <img src="medias/icons/icon_battery.png" alt="Batterie">
+      <span id="battery">100%</span>
+    </div>
+  </div>
+</div>

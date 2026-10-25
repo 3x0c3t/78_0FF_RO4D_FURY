@@ -1,55 +1,101 @@
-// footer.js
+// ====================================================
+// Fichier : footer.js
+// Description : Chargement des blocs du footer et menu
+// ====================================================
 
-const footerContainer = document.getElementById("footer-container");
+// Répertoire réel de ce script
+const footerScriptURL = document.currentScript.src;
+const footerBaseURL = new URL('./', footerScriptURL);
 
-// Liste des blocs avec leurs fichiers HTML et CSS
+const footerContainer = document.getElementById('footer-container');
+
 const footerBlocs = [
-    { html: "bloc1.html", css: "bloc1.css" },
-    { html: "bloc2.html", css: "bloc2.css" },
-    { html: "bloc3.html", css: "bloc3.css" }
+    { html: 'bloc1.html', css: 'bloc1.css' },
+    { html: 'bloc2.html', css: 'bloc2.css' },
+    { html: 'bloc3.html', css: 'bloc3.css' }
 ];
 
-
-// Fonction pour charger un fichier HTML dans un container
-async function loadHTML(container, htmlPath) {
-    try {
-        const response = await fetch(htmlPath);
-        if (!response.ok) throw new Error(`Erreur chargement ${htmlPath}: ${response.status}`);
-        const html = await response.text();
-        container.innerHTML += html;
-    } catch (err) {
-        console.error(err);
-    }
-}
-
-// Fonction pour charger un fichier CSS dans <head>
+// Charger une feuille CSS depuis le répertoire du footer
 function loadCSS(cssPath) {
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = cssPath;
+    const href = new URL(cssPath, footerBaseURL).href;
+
+    // Éviter de charger plusieurs fois la même feuille
+    if ([...document.querySelectorAll('link[rel="stylesheet"]')]
+        .some(link => link.href === href)) {
+        return;
+    }
+
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = href;
     document.head.appendChild(link);
 }
 
-// Charger les blocs **séquentiellement**
+// Charger les styles nécessaires à l'interface
+loadCSS('../reset.css');
+loadCSS('../index.css');
+loadCSS('footer.css');
+
+// Charger un bloc HTML
+async function loadHTML(container, htmlPath) {
+    if (!container) {
+        console.error('Conteneur du footer introuvable.');
+        return;
+    }
+
+    const url = new URL(htmlPath, footerBaseURL);
+
+    try {
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error(`${response.status} ${response.statusText}`);
+        }
+
+        const html = await response.text();
+        container.insertAdjacentHTML('beforeend', html);
+    } catch (error) {
+        console.error(
+            `Erreur de chargement du bloc ${url.href} :`,
+            error
+        );
+    }
+}
+
+// Charger les blocs dans l'ordre
 async function loadFooter() {
-    for (let i = 0; i < footerBlocs.length; i++) {
-        const bloc = footerBlocs[i];
+    if (!footerContainer) {
+        console.error('Élément #footer-container introuvable.');
+        return;
+    }
+
+    for (const bloc of footerBlocs) {
         await loadHTML(footerContainer, bloc.html);
         loadCSS(bloc.css);
     }
 
-    // Installer le listener pour le menu après que bloc3 est chargé
-    const menuButton = document.getElementById("menu-button");
-    const gameMenu = document.getElementById("game-menu");
+    const menuButton = document.getElementById('menu-button');
+    const gameMenu = document.getElementById('game-menu');
 
     if (menuButton && gameMenu) {
-        menuButton.addEventListener("click", () => {
-            gameMenu.classList.toggle("hidden");
+        menuButton.addEventListener('click', event => {
+            event.stopPropagation();
+            gameMenu.classList.toggle('hidden');
+        });
+
+        document.addEventListener('click', event => {
+            if (
+                !gameMenu.contains(event.target) &&
+                !menuButton.contains(event.target)
+            ) {
+                gameMenu.classList.add('hidden');
+            }
         });
     }
 
-    console.log("Footer chargé avec tous ses blocs et menu prêt !");
+    console.log('Footer chargé avec tous ses blocs et menu prêt !');
 }
 
-// Lancer le chargement
 loadFooter();
+
+// === footer.js - END

@@ -17,6 +17,11 @@ document.querySelectorAll('.menu-option').forEach(opt => {
         document.querySelectorAll(`.menu-option[data-menu="${group}"]`)
                 .forEach(o => o.classList.remove('active'));
         opt.classList.add('active');
+
+        // Mémoriser la map sélectionnée
+        if (group === 'map' && opt.dataset.value) {
+            sessionStorage.setItem('selectedMap', opt.dataset.value);
+        }
     });
 });
 
@@ -26,6 +31,11 @@ document.getElementById('play').addEventListener('click', () => {
     if (mp3Frame && mp3Frame.contentWindow) {
         mp3Frame.contentWindow.postMessage({ action: 'play' }, '*');
     }
+    // Utiliser la map sélectionnée, ou la map par défaut
+    if (!sessionStorage.getItem('selectedMap')) {
+        sessionStorage.setItem('selectedMap', 'map');
+    }
+
     window.location.href = 'game/game.html';
 });
 
