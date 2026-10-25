@@ -5,6 +5,7 @@ import {
     scene,
     renderer,
     camera,
+    controls,
     handleResize
 } from './gameScene.js';
 
@@ -41,16 +42,73 @@ let vehicleLoaded = false;
     await loadMap(mapSelector);
 })();
 
-// ===== CAMERA 3E PERSONNE =====
-const cameraOffset = new THREE.Vector3(0, 5, -10);
+// ===== CAMERA 3E PERSONNE : SUIVI + ORBITCONTROLS =====
+let cameraInitialized = false;
 
 function updateCamera() {
-    if (!vehicleGroup) return;
-    const relativeCameraOffset = cameraOffset.clone();
-    const cameraPosition = relativeCameraOffset.applyMatrix4(vehicleGroup.matrixWorld);
-    camera.position.lerp(cameraPosition, 0.1);
-    camera.lookAt(vehicleGroup.position);
+    if (!vehicleGroup || !controls) return;
+
+    const target = vehicleGroup.position.clone();
+    target.y += 1;
+
+    // Positionner la caméra derrière le véhicule au premier passage.
+    if (!cameraInitialized) {
+        camera.position.copy(target).add(
+            new THREE.Vector3(0, 5, -10)
+        );
+        controls.target.copy(target);
+        controls.update();
+        cameraInitialized = true;
+        return;
+    }
+
+    // Déplacer la caméra avec le véhicule sans écraser
+    // la rotation et le zoom choisis par le joueur.
+    const delta = target.clone().sub(controls.target);
+    camera.position.add(delta);
+    controls.target.copy(target);
+    controls.update();
 }
+
+// ===== ZOOM CLAVIER : + ET - =====
+function zoomCamera(factor) {
+    if (!camera || !controls) return;
+
+    const offset = camera.position.clone().sub(controls.target);
+    const distance = offset.length();
+
+    if (distance === 0) return;
+
+    const nextDistance = THREE.MathUtils.clamp(
+        distance * factor,
+        controls.minDistance,
+        controls.maxDistance
+    );
+
+    offset.setLength(nextDistance);
+    camera.position.copy(controls.target).add(offset);
+    controls.update();
+}
+
+window.addEventListener('keydown', event => {
+    if (event.repeat) return;
+
+    if (
+        event.key === '+' ||
+        event.key === '=' ||
+        event.code === 'NumpadAdd'
+    ) {
+        event.preventDefault();
+        zoomCamera(0.85);
+    } else if (
+        event.key === '-' ||
+        event.key === '_' ||
+        event.code === 'NumpadSubtract'
+    ) {
+        event.preventDefault();
+        zoomCamera(1.15);
+    }
+});
 
 // ===== VÉRIFIER SI LE VÉHICULE EST RETOURNÉ =====
 function checkVehicleUpsideDown() {

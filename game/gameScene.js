@@ -33,6 +33,16 @@ export function initScene() {
     controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
+
+    // Souris : rotation orbitale.
+    controls.enableRotate = true;
+
+    // Molette : zoom avant / arrière.
+    controls.enableZoom = true;
+    controls.minDistance = 4;
+    controls.maxDistance = 40;
+    controls.zoomSpeed = 1.0;
+
     controls.target.set(0, 0, 0);
     controls.update();
 }
