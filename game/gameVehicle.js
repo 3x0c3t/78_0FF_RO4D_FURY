@@ -81,6 +81,25 @@ export async function loadVehicle(name) {
     });
 }
 
+// ================= RESET VEHICULE =================
+export function resetVehicle() {
+    if (!vehicleGroup) return;
+
+    keys.forward = false;
+    keys.backward = false;
+    keys.left = false;
+    keys.right = false;
+
+    verticalVelocity = 0;
+    vehicleRotation = 0;
+
+    vehicleGroup.position.set(0, 6, 0);
+    vehicleGroup.quaternion.identity();
+    vehicleGroup.rotation.set(0, 0, 0);
+    vehicleGroup.userData.speed = 0;
+    vehicleGroup.updateMatrixWorld(true);
+}
+
 // ================= PHYSIQUE =================
 function applySuspensionPhysics() {
     if (!terrain || !vehicleGroup) return;
@@ -119,12 +138,25 @@ function applySuspensionPhysics() {
     if (hitPoints.length >= 3) {
         const v1 = new THREE.Vector3().subVectors(hitPoints[1], hitPoints[0]);
         const v2 = new THREE.Vector3().subVectors(hitPoints[2], hitPoints[0]);
-        const normal = new THREE.Vector3().crossVectors(v1, v2).normalize();
+        const normal = new THREE.Vector3()
+            .crossVectors(v1, v2)
+            .normalize();
 
-        const targetQuat = new THREE.Quaternion().setFromUnitVectors(
-            new THREE.Vector3(0, 1, 0),
-            normal
-        );
+        // La normale doit toujours pointer vers le haut.
+        if (normal.y < 0) normal.negate();
+
+        const up = new THREE.Vector3(0, 1, 0);
+
+        // Inclinaison déterminée par le terrain.
+        const slopeQuat = new THREE.Quaternion()
+            .setFromUnitVectors(up, normal);
+
+        // Direction horizontale déterminée par le conducteur.
+        const yawQuat = new THREE.Quaternion()
+            .setFromAxisAngle(up, vehicleRotation);
+
+        // Combiner les deux sans perdre la direction du véhicule.
+        const targetQuat = slopeQuat.multiply(yawQuat);
 
         vehicleGroup.quaternion.slerp(targetQuat, 0.2);
     }
