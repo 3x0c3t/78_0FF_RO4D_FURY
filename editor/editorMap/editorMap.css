@@ -26,13 +26,17 @@ h1 {
 
 .editor-container {
   display: flex;
-  flex: 1;
+  flex: 1 1 auto;
   gap: 20px;
   min-height: 0;
+  min-width: 0;
 }
 
 .menu-column {
+  flex: 0 0 220px;
   width: 220px;
+  min-height: 0;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 15px;
@@ -74,14 +78,15 @@ h1 {
 }
 
 .preview-column {
-  flex: 1;
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 0;
   background: #111;
   border: 2px solid #555;
   border-radius: 6px;
   position: relative;
   display: flex;
   flex-direction: column;
-  height: 100%; /* correction : la colonne prend toute la hauteur de l'éditeur */
 }
 
 canvas {
@@ -93,6 +98,7 @@ canvas {
 }
 
 .bottom-buttons {
+  flex: 0 0 auto;
   margin-top: 10px;
   display: flex;
   gap: 10px;
@@ -143,4 +149,25 @@ select {
   font-family: monospace;
   font-size: 13px;
   color: #ddd;
+}
+
+.intensity-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+#map-intensity {
+  flex: 1;
+  min-width: 0;
+  accent-color: #00c853;
+  cursor: pointer;
+}
+
+#map-intensity-value {
+  min-width: 45px;
+  text-align: right;
+  font-family: monospace;
+  font-size: 13px;
 }
