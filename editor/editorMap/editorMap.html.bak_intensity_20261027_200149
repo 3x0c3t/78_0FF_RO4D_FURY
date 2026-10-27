@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Éditeur de Map - OFF ROAD FURY</title>
+  <link rel="stylesheet" href="editorMap.css">
+</head>
+<body>
+
+<div id="app">
+
+  <h1>ÉDITEUR DE MAP</h1>
+
+
+  <div class="editor-container">
+
+    <!-- COLONNE GAUCHE -->
+    <div class="menu-column">
+
+      <!-- IMPORT MAP -->
+      <input type="file" id="map-import" accept=".json" style="margin-bottom:10px">
+
+      <!-- MAP -->
+      <div class="menu-line">
+        <div class="menu-title">Choisir Map :</div>
+        <select id="map-selector">
+          <option value="desert">Désert</option>
+          <option value="forest">Forêt</option>
+          <option value="suburb">Banlieue</option>
+          <option value="mountain">Montagne</option>
+        </select>
+      </div>
+
+      <!-- PALETTE DE COULEURS -->
+      <div class="menu-line">
+        <label class="menu-title" for="map-color">Couleur du terrain :</label>
+        <div class="color-picker-row">
+          <input type="color" id="map-color" value="#f0e68c">
+          <output id="map-color-value">#F0E68C</output>
+        </div>
+      </div>
+
+      <!-- TEXTURE PRESET -->
+      <div class="menu-line">
+        <div class="menu-title">Texture :</div>
+        <select id="texture-selector">
+          <option value="none">Aucune</option>
+          <option value="sand1">Sable 1</option>
+          <option value="sand2">Sable 2</option>
+          <option value="sand3">Sable 3</option>
+          <option value="sand4">Sable 4</option>
+          <option value="sand5">Sable 5</option>
+          <option value="sand6">Sable 6</option>
+          <option value="sand7">Sable 7</option>
+          <option value="geo1">Geo 1</option>
+          <option value="geo2">Geo 2</option>
+          <option value="geo3">Geo 3</option>
+          <option value="geo4">Geo 4</option>
+          <option value="geo5">Geo 5</option>
+          <option value="geo6">Geo 6</option>
+          <option value="geo7">Geo 7</option>
+          <option value="geo8">Geo 8</option>
+          <option value="geo9">Geo 9</option>
+          <option value="metal1">Metal 1</option>
+        </select>
+      </div>
+
+      <!-- TEXTURE UPLOAD -->
+      <div class="menu-line">
+        <div class="menu-title">Charger texture :</div>
+        <input type="file" id="texture-upload" accept="image/*">
+      </div>
+
+      <!-- OUTILS -->
+      <div class="menu-title">Outils Terrain :</div>
+      <div class="menu-options">
+        <span class="menu-option selected" data-tool="select">Sélection</span>
+        <span class="menu-option" data-tool="raise">Monter</span>
+        <span class="menu-option" data-tool="lower">Descendre</span>
+        <span class="menu-option" data-tool="smooth">Lisser</span>
+        <span class="menu-option" data-tool="flatten">Aplatir</span>
+        <span class="menu-option" data-tool="set-spawn">Définir Spawn</span>
+      </div>
+
+    </div>
+
+    <!-- CANVAS -->
+    <div class="preview-column">
+      <canvas id="map-canvas"></canvas>
+    </div>
+
+  </div>
+
+  <div class="bottom-buttons">
+    <button id="save">SAUVEGARDER</button>
+    <button id="back">RETOUR</button>
+  </div>
+
+</div>
+
+<script type="module" src="editorMap.js"></script>
+</body>
+</html>

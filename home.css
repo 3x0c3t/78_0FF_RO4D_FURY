@@ -197,3 +197,21 @@ button {
   background: #111;
   color: #ffcc00;
 }
+
+/* === PRÉVISUALISATION 3D DES MAPS === */
+#preview-block {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  min-height: 220px;
+  overflow: hidden;
+  background: #101010;
+  box-sizing: border-box;
+}
+
+#preview-block canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+/* === FIN PRÉVISUALISATION 3D === */

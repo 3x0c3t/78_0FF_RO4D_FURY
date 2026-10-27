@@ -26,12 +26,7 @@
         <div class="menu-title">MAP :</div>
         <div class="menu-options">
           <select id="map-select" class="map-select" aria-label="Sélectionner une map">
-            <option value="map">Désert</option>
-            <option value="forest">Forêt</option>
-            <option value="suburb">Banlieue</option>
-            <option value="mountain">Montagne</option>
-            <option value="test/20261025_1">TEST 1</option>
-            <option value="test/20261025_2">TEST 2</option>
+            <option value="map">Chargement des cartes...</option>
           </select>
         </div>
       </div>
@@ -90,6 +85,6 @@
     background: transparent;">
 </iframe>
 
-<script src="home.js"></script>
+<script src="home.js?v=20261027-maps1"></script>
 </body>
 </html>

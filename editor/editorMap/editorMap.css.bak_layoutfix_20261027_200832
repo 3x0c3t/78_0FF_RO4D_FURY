@@ -1,0 +1,168 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #222;
+  color: #eee;
+  height: 100vh; /* pour que le flex fonctionne correctement */
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+h1 {
+  flex: 0 0 20px;
+  height: 20px;
+  line-height: 20px;
+  text-align: center;
+  font-size: 18px;
+  margin: 0 0 10px;
+  padding: 0;
+}
+
+.editor-container {
+  display: flex;
+  flex: 1;
+  gap: 20px;
+  height: calc(100% - 60px);
+  min-height: 0;
+}
+
+.menu-column {
+  width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.menu-title {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.menu-line {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+}
+
+.menu-options {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.menu-option {
+  cursor: pointer;
+  padding: 5px 8px;
+  border-radius: 4px;
+  background: #333;
+  color: #eee;
+  transition: 0.2s;
+}
+
+.menu-option:hover {
+  background: #555;
+}
+
+.menu-option.selected {
+  background: #00c853;
+  font-weight: bold;
+}
+
+.preview-column {
+  flex: 1;
+  background: #111;
+  border: 2px solid #555;
+  border-radius: 6px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* correction : la colonne prend toute la hauteur de l'éditeur */
+}
+
+canvas {
+  flex: 1; /* correction : le canvas prend tout l'espace disponible */
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
+}
+
+.bottom-buttons {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+button {
+  padding: 10px 15px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  border-radius: 6px;
+}
+
+#save {
+  background: linear-gradient(135deg, #0f9b0f, #00c853);
+  color: #fff;
+}
+
+#back {
+  background: linear-gradient(135deg, #555, #999);
+  color: #fff;
+}
+
+select {
+  padding: 5px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.color-picker-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#map-color {
+  width: 52px;
+  height: 32px;
+  padding: 2px;
+  border: 1px solid #777;
+  border-radius: 4px;
+  background: #333;
+  cursor: pointer;
+}
+
+#map-color-value {
+  font-family: monospace;
+  font-size: 13px;
+  color: #ddd;
+}
+
+.intensity-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+#map-intensity {
+  flex: 1;
+  min-width: 0;
+  accent-color: #00c853;
+  cursor: pointer;
+}
+
+#map-intensity-value {
+  min-width: 45px;
+  text-align: right;
+  font-family: monospace;
+  font-size: 13px;
+}
