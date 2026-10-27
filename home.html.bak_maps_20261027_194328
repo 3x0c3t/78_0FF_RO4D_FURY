@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>OFF ROAD FURY</title>
+  <link rel="stylesheet" href="home.css">
+</head>
+<body>
+
+<div id="app">
+  <h1>OFF ROAD FURY</h1>
+
+  <!-- BOUTON MP3 -->
+  <button id="mp3-toggle">🎵</button>
+
+  <!-- CONTENEUR DU LECTEUR MP3 -->
+  <div id="mp3player-container">
+    <iframe src="mp3player/mp3.html" frameborder="0"></iframe>
+  </div>
+
+  <div class="menu-preview-container">
+
+    <div class="menu-column">
+
+      <div class="menu-line">
+        <div class="menu-title">MAP :</div>
+        <div class="menu-options">
+          <select id="map-select" class="map-select" aria-label="Sélectionner une map">
+            <option value="map">Désert</option>
+            <option value="forest">Forêt</option>
+            <option value="suburb">Banlieue</option>
+            <option value="mountain">Montagne</option>
+            <option value="test/20261025_1">TEST 1</option>
+            <option value="test/20261025_2">TEST 2</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="menu-line">
+        <div class="menu-title">VÉHICULE :</div>
+        <div class="menu-options">
+          <span class="menu-option" data-menu="vehicle">Buggy</span>
+          <span class="menu-option" data-menu="vehicle">4x4</span>
+          <span class="menu-option" data-menu="vehicle">Camion</span>
+        </div>
+      </div>
+
+      <div class="menu-line">
+        <div class="menu-title">MODE :</div>
+        <div class="menu-options">
+          <span class="menu-option" data-menu="mode">Free Ride</span>
+          <span class="menu-option" data-menu="mode">Time Trial</span>
+        </div>
+      </div>
+
+      <div class="menu-line">
+        <div class="menu-title">OPTIONS :</div>
+        <div class="menu-options">
+          <span class="menu-option" data-menu="options">Facile</span>
+          <span class="menu-option" data-menu="options">Moyen</span>
+          <span class="menu-option" data-menu="options">Difficile</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="preview-column">
+      <div id="preview-block"></div>
+    </div>
+
+  </div>
+
+  <div class="bottom-buttons">
+    <button id="play">JOUER</button>
+    <button id="editor">ÉDITEUR</button>
+  </div>
+
+</div>
+
+<!-- MENU BURGER -->
+<iframe src="menu.html" id="menu-frame" style="
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 280px;
+    height: 400px;
+    border: none;
+    z-index: 1000;
+    pointer-events: auto;
+    background: transparent;">
+</iframe>
+
+<script src="home.js"></script>
+</body>
+</html>

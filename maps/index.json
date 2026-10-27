@@ -1,0 +1,22 @@
+[
+  {
+    "value": "map",
+    "label": "Désert (classique)"
+  },
+  {
+    "value": "desert",
+    "label": "Désert"
+  },
+  {
+    "value": "test/map (3)",
+    "label": "map (3)"
+  },
+  {
+    "value": "test/20261025_1",
+    "label": "TEST 1"
+  },
+  {
+    "value": "test/20261025_2",
+    "label": "TEST 2"
+  }
+]

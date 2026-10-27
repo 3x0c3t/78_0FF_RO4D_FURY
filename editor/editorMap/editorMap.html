@@ -11,10 +11,6 @@
 
   <h1>ÉDITEUR DE MAP</h1>
 
-  <div class="axis-info">
-    <strong>Convention des coordonnées :</strong><br>
-    X = Longueur &nbsp;|&nbsp; Y = Largeur &nbsp;|&nbsp; Z = Hauteur
-  </div>
 
   <div class="editor-container">
 
@@ -33,6 +29,15 @@
           <option value="suburb">Banlieue</option>
           <option value="mountain">Montagne</option>
         </select>
+      </div>
+
+      <!-- PALETTE DE COULEURS -->
+      <div class="menu-line">
+        <label class="menu-title" for="map-color">Couleur du terrain :</label>
+        <div class="color-picker-row">
+          <input type="color" id="map-color" value="#f0e68c">
+          <output id="map-color-value">#F0E68C</output>
+        </div>
       </div>
 
       <!-- TEXTURE PRESET -->

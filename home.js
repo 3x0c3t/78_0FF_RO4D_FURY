@@ -25,28 +25,82 @@ document.querySelectorAll('.menu-option').forEach(opt => {
     });
 });
 
-// ===== SELECTION DE LA MAP =====
+// ===== SELECTION DYNAMIQUE DES MAPS =====
 const mapSelect = document.getElementById('map-select');
 
-if (mapSelect) {
+async function loadMapOptions() {
+    if (!mapSelect) return;
+
     const savedMap = sessionStorage.getItem('selectedMap') || 'map';
-    const savedOptionExists = Array.from(mapSelect.options)
-        .some(option => option.value === savedMap);
+    mapSelect.replaceChildren();
 
-    mapSelect.value = savedOptionExists ? savedMap : 'map';
+    try {
+        const response = await fetch(`maps/index.json?v=${Date.now()}`, {
+            cache: 'no-store'
+        });
 
-    // Synchroniser la sélection avec le jeu.
-    sessionStorage.setItem('selectedMap', mapSelect.value);
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
 
-    mapSelect.addEventListener('change', () => {
+        const maps = await response.json();
+
+        if (!Array.isArray(maps) ||
+            !maps.some(map => map && map.value === 'map')) {
+            throw new Error('Manifeste invalide ou carte par défaut absente.');
+        }
+
+        for (const map of maps) {
+            if (
+                !map ||
+                typeof map.value !== 'string' ||
+                typeof map.label !== 'string' ||
+                map.value.startsWith('/') ||
+                map.value.split('/').some(part => !part || part === '.' || part === '..') ||
+                !/^[a-zA-Z0-9_ /()-]+$/.test(map.value)
+            ) {
+                continue;
+            }
+
+            const option = document.createElement('option');
+            option.value = map.value;
+            option.textContent = map.label;
+            mapSelect.appendChild(option);
+        }
+
+        if (!Array.from(mapSelect.options).some(option => option.value === 'map')) {
+            throw new Error('La carte par défaut est absente des options valides.');
+        }
+
+        const selectedExists = Array.from(mapSelect.options)
+            .some(option => option.value === savedMap);
+
+        mapSelect.value = selectedExists ? savedMap : 'map';
         sessionStorage.setItem('selectedMap', mapSelect.value);
 
-        if (audioAllowed) {
-            window.selectSound.currentTime = 0;
-            window.selectSound.play().catch(() => {});
-        }
-    });
+        mapSelect.addEventListener('change', () => {
+            sessionStorage.setItem('selectedMap', mapSelect.value);
+
+            if (audioAllowed) {
+                window.selectSound.currentTime = 0;
+                window.selectSound.play().catch(() => {});
+            }
+        });
+
+        console.log(`${mapSelect.options.length} carte(s) disponible(s).`);
+    } catch (error) {
+        console.error('Impossible de charger la liste des cartes :', error);
+
+        const option = document.createElement('option');
+        option.value = 'map';
+        option.textContent = 'Désert (classique) - liste indisponible';
+        mapSelect.appendChild(option);
+        mapSelect.value = 'map';
+        sessionStorage.setItem('selectedMap', 'map');
+    }
 }
+
+loadMapOptions();
 
 // ===== BOUTONS PRINCIPAUX =====
 document.getElementById('play').addEventListener('click', () => {

@@ -12,14 +12,14 @@ export async function loadMap(name) {
 
     if (
         safeName.startsWith('/') ||
-        safeName.includes('..') ||
-        !/^[a-zA-Z0-9_/-]+$/.test(safeName)
+        safeName.split('/').some(part => !part || part === '.' || part === '..') ||
+        !/^[a-zA-Z0-9_ /()-]+$/.test(safeName)
     ) {
         throw new Error(`Nom de map invalide : ${safeName}`);
     }
 
     const mapURL = new URL(`../maps/${safeName}.json`, import.meta.url);
-    const res = await fetch(mapURL);
+    const res = await fetch(mapURL, { cache: 'no-store' });
 
     if (!res.ok) {
         throw new Error(`Chargement de la map impossible : ${res.status} ${mapURL}`);

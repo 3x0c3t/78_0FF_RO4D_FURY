@@ -160,6 +160,13 @@ export function loadMap(file) {
       spawn.position.fromArray(data.spawn);
     }
 
+    if (typeof data.color === 'string' && /^#[0-9a-fA-F]{6}$/.test(data.color)) {
+      material.color.set(data.color);
+      window.dispatchEvent(new CustomEvent('map-color-loaded', {
+        detail: { color: data.color.toLowerCase() }
+      }));
+    }
+
     material.map = null;
     customTexture = null;
     material.needsUpdate = true;
@@ -176,6 +183,7 @@ export function saveMap() {
       : material.map
       ? material.map.image.src
       : null,
+    color: '#' + material.color.getHexString(),
     vertices: Array.from(geometry.attributes.position.array)
   };
 
@@ -195,12 +203,21 @@ export function saveMap() {
 // ==================
 export function setMapColor(value) {
   const colors = {
-    desert: 0xf0e68c,
-    forest: 0x228b22,
-    suburb: 0x888888,
-    mountain: 0xaaaaaa
+    desert: '#f0e68c',
+    forest: '#228b22',
+    suburb: '#888888',
+    mountain: '#aaaaaa'
   };
-  material.color.set(colors[value]);
+
+  const color = colors[value] || value;
+
+  if (typeof color === 'string' && /^#[0-9a-fA-F]{6}$/.test(color)) {
+    material.color.set(color);
+  }
+}
+
+export function getMapColor() {
+  return '#' + material.color.getHexString();
 }
 
 export function setTexture(value) {

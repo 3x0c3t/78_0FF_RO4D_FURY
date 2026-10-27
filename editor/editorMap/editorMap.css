@@ -15,15 +15,20 @@ body {
 }
 
 h1 {
+  flex: 0 0 20px;
+  height: 20px;
+  line-height: 20px;
   text-align: center;
-  margin-bottom: 15px;
+  font-size: 18px;
+  margin: 0 0 10px;
+  padding: 0;
 }
 
 .editor-container {
   display: flex;
   flex: 1;
   gap: 20px;
-  height: calc(100% - 60px); /* laisse de la place pour le titre et les boutons */
+  min-height: 0;
 }
 
 .menu-column {
@@ -116,4 +121,26 @@ select {
   padding: 5px;
   border-radius: 4px;
   font-size: 14px;
+}
+
+.color-picker-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#map-color {
+  width: 52px;
+  height: 32px;
+  padding: 2px;
+  border: 1px solid #777;
+  border-radius: 4px;
+  background: #333;
+  cursor: pointer;
+}
+
+#map-color-value {
+  font-family: monospace;
+  font-size: 13px;
+  color: #ddd;
 }

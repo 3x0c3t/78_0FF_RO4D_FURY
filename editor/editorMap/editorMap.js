@@ -10,6 +10,7 @@ import {
   loadMap,
   saveMap,
   setMapColor,
+  getMapColor,
   setTexture,
   uploadTexture,
   getClosestVertex,
@@ -50,9 +51,30 @@ document.getElementById('map-import').addEventListener('change', e => {
 // ==================
 // UI : MAP SELECTOR
 // ==================
+const colorInput = document.getElementById('map-color');
+const colorValue = document.getElementById('map-color-value');
+
+function syncColorInput(color = getMapColor()) {
+  colorInput.value = color;
+  colorValue.textContent = color.toUpperCase();
+}
+
 document.getElementById('map-selector').addEventListener('change', e => {
   setMapColor(e.target.value);
+  syncColorInput();
 });
+
+colorInput.addEventListener('input', e => {
+  setMapColor(e.target.value);
+  syncColorInput(e.target.value);
+});
+
+window.addEventListener('map-color-loaded', e => {
+  syncColorInput(e.detail.color);
+});
+
+setMapColor(document.getElementById('map-selector').value);
+syncColorInput();
 
 // ==================
 // UI : TEXTURES
