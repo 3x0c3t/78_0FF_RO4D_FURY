@@ -12,16 +12,26 @@ export const suspensions = {};
 const speed = 0.5;         // vitesse de déplacement
 const turnSpeed = 0.04;    // vitesse de rotation
 
-const suspensionRest = 1.2;
-const suspensionMax = 2.0;
+const suspensionRest = 0.7;
+const suspensionMax = 3.0;
 const gravity = 0.12;
+const suspensionStiffness = 0.18;
+const suspensionDamping = 0.68;
+const wheelRadius = 0.35;
 
 let verticalVelocity = 0;
-let vehicleRotation = 0;   // angle actuel du véhicule
+let vehicleRotation = 0;   // angle horizontal du véhicule
+const vehicleSpawn = new THREE.Vector3(0, 6, 0);
+
+// Mémoriser le point d'apparition de la carte active.
+export function setVehicleSpawn(position) {
+    if (!position) return;
+    vehicleSpawn.copy(position);
+}
 
 // ===== RAYCAST =====
 const raycaster = new THREE.Raycaster();
-raycaster.far = suspensionMax + 2;
+raycaster.far = 12;
 const down = new THREE.Vector3(0, -1, 0);
 
 // ================= LOAD VEHICLE =================
@@ -69,12 +79,12 @@ export async function loadVehicle(name) {
 
         wheel.rotation.z = Math.PI / 2;
 
-        rod.position.y = 0.5;
-        spring.position.y = 0.5;
-        wheel.position.y = 0;
+        rod.position.y = 0.15;
+        spring.position.y = 0.15;
+        wheel.position.y = -wheelRadius;
 
         group.add(rod, spring, wheel);
-        group.position.set(pos[0], 0, pos[1]);
+        group.position.set(pos[0], -wheelRadius, pos[1]);
 
         vehicleGroup.add(group);
         suspensions[key] = { group };
@@ -93,7 +103,7 @@ export function resetVehicle() {
     verticalVelocity = 0;
     vehicleRotation = 0;
 
-    vehicleGroup.position.set(0, 6, 0);
+    vehicleGroup.position.copy(vehicleSpawn);
     vehicleGroup.quaternion.identity();
     vehicleGroup.rotation.set(0, 0, 0);
     vehicleGroup.userData.speed = 0;
@@ -104,8 +114,11 @@ export function resetVehicle() {
 function applySuspensionPhysics() {
     if (!terrain || !vehicleGroup) return;
 
-    let hitPoints = [];
+    const hitPoints = [];
     let avgHeight = 0;
+
+    // Actualiser les matrices avant de calculer les contacts des roues.
+    vehicleGroup.updateMatrixWorld(true);
 
     Object.values(suspensions).forEach(s => {
         const origin = new THREE.Vector3();
@@ -115,50 +128,46 @@ function applySuspensionPhysics() {
         raycaster.set(origin, down);
         const hits = raycaster.intersectObject(terrain, false);
 
-        if (hits.length) {
-            hitPoints.push(hits[0].point);
+        if (hits.length > 0) {
+            hitPoints.push(hits[0].point.clone());
             avgHeight += hits[0].point.y;
         }
     });
 
-    if (!hitPoints.length) {
-        verticalVelocity -= gravity;
-        verticalVelocity = Math.max(verticalVelocity, -3);
+    // Aucun contact : laisser le véhicule retomber sous l'effet de la gravité.
+    if (hitPoints.length === 0) {
+        verticalVelocity = Math.max(verticalVelocity - gravity, -3);
         vehicleGroup.position.y += verticalVelocity;
         return;
     }
 
+    // La hauteur de référence correspond au terrain sous les roues.
     avgHeight /= hitPoints.length;
     const targetY = avgHeight + suspensionRest;
+    const heightError = targetY - vehicleGroup.position.y;
 
-    verticalVelocity += (targetY - vehicleGroup.position.y) * 0.2;
-    verticalVelocity *= 0.65;
+    // Suspension amortie pour éviter les rebonds et les oscillations.
+    verticalVelocity += heightError * suspensionStiffness;
+    verticalVelocity *= suspensionDamping;
     vehicleGroup.position.y += verticalVelocity;
 
+    // Trois contacts au minimum permettent d'estimer le plan du terrain.
     if (hitPoints.length >= 3) {
         const v1 = new THREE.Vector3().subVectors(hitPoints[1], hitPoints[0]);
         const v2 = new THREE.Vector3().subVectors(hitPoints[2], hitPoints[0]);
-        const normal = new THREE.Vector3()
-            .crossVectors(v1, v2)
-            .normalize();
+        const normal = new THREE.Vector3().crossVectors(v1, v2).normalize();
 
-        // La normale doit toujours pointer vers le haut.
         if (normal.y < 0) normal.negate();
 
-        const up = new THREE.Vector3(0, 1, 0);
+        // Ignorer une normale dégénérée ou presque verticale.
+        if (normal.lengthSq() > 0.5 && normal.y > 0.15) {
+            const up = new THREE.Vector3(0, 1, 0);
+            const slopeQuat = new THREE.Quaternion().setFromUnitVectors(up, normal);
+            const yawQuat = new THREE.Quaternion().setFromAxisAngle(up, vehicleRotation);
+            const targetQuat = slopeQuat.multiply(yawQuat);
 
-        // Inclinaison déterminée par le terrain.
-        const slopeQuat = new THREE.Quaternion()
-            .setFromUnitVectors(up, normal);
-
-        // Direction horizontale déterminée par le conducteur.
-        const yawQuat = new THREE.Quaternion()
-            .setFromAxisAngle(up, vehicleRotation);
-
-        // Combiner les deux sans perdre la direction du véhicule.
-        const targetQuat = slopeQuat.multiply(yawQuat);
-
-        vehicleGroup.quaternion.slerp(targetQuat, 0.2);
+            vehicleGroup.quaternion.slerp(targetQuat, 0.15);
+        }
     }
 }
 
@@ -177,7 +186,8 @@ export function moveVehicle() {
         if (keys.right) vehicleRotation -= turnSpeed * moveDir;
     }
 
-    vehicleGroup.rotation.y = vehicleRotation;
+    // L'orientation complète est gérée par la physique de suspension.
+    // vehicleRotation reste utilisé pour calculer la direction de déplacement.
 
     // ----- VECTEUR AVANT -----
     const forward = new THREE.Vector3(

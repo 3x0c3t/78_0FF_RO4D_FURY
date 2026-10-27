@@ -2,7 +2,7 @@
 
 import * as THREE from '../libs/three.module.js';
 import { scene, controls } from './gameScene.js';
-import { vehicleGroup } from './gameVehicle.js';
+import { vehicleGroup, setVehicleSpawn } from './gameVehicle.js';
 
 export let terrain;
 
@@ -77,15 +77,27 @@ export async function loadMap(name) {
     terrain = new THREE.Mesh(geometry, material);
     scene.add(terrain);
 
-    if (data.spawn && vehicleGroup) {
-        vehicleGroup.position.set(
-            data.spawn[0],
-            data.spawn[1] ?? 2,
-            data.spawn[2]
-        );
+    if (vehicleGroup) {
+        if (
+            Array.isArray(data.spawn) &&
+            data.spawn.length >= 3 &&
+            data.spawn.every(Number.isFinite)
+        ) {
+            vehicleGroup.position.set(
+                data.spawn[0],
+                data.spawn[1] ?? 2,
+                data.spawn[2]
+            );
+        }
 
-        controls.target.copy(vehicleGroup.position);
-        controls.update();
+        // Avec ou sans spawn défini dans le JSON, mémoriser
+        // la position effective comme point de redémarrage.
+        setVehicleSpawn(vehicleGroup.position);
+
+        if (controls) {
+            controls.target.copy(vehicleGroup.position);
+            controls.update();
+        }
     }
 
     console.log(`Map chargée : ${safeName}`);
